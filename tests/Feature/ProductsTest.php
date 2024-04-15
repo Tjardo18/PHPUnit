@@ -11,6 +11,7 @@ use App\Models\User;
 class ProductsTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_homepage_contains_empty_table(): void
     {
         User::factory()->create([
@@ -42,7 +43,7 @@ class ProductsTest extends TestCase
             'password' => 'password',
         ]);
 
-        Product::factory()->create([
+        $product = Product::factory()->create([
             'name' => 'Product Test',
             'price' => 123,
         ]);
@@ -50,6 +51,10 @@ class ProductsTest extends TestCase
         $response = $this->get('/products');
         $response->assertStatus(200);
         $response->assertDontSee(__('No products found'));
+        $response->assertSee('Product Test');
+        $response->assertViewHas('products', function ($collection) use ($product) {
+            return $collection->contains($product);
+        });
     }
 
 }
