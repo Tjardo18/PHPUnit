@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Illuminate\Testing\TestResponse;
+
 
 class AuthTest extends TestCase
 {
@@ -13,16 +15,9 @@ class AuthTest extends TestCase
 
     public function test_login_redirects_to_products()
     {
-        User::create([
-            'name' => 'User',
-            'email' => 'user@user.com',
-            'password' => bcrypt('password123')
-        ]);
+        $this->createUser();
 
-        $response = $this->post('/login', [
-            'email' => 'user@user.com',
-            'password' => 'password123'
-        ]);
+        $response = $this->loginUser();
 
         $response->assertStatus(302);
         $response->assertRedirect('products');
@@ -34,5 +29,22 @@ class AuthTest extends TestCase
 
         $response->assertStatus(302);
         $response->assertRedirect('login');
+    }
+
+    private function createUser(): User
+    {
+        return User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@user.com',
+            'password' => bcrypt('password')
+        ]);
+    }
+
+    private function loginUser(): TestResponse
+    {
+        return $this->post('/login', [
+            'email' => 'admin@user.com',
+            'password' => 'password',
+        ]);
     }
 }

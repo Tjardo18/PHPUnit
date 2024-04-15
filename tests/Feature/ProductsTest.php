@@ -14,16 +14,8 @@ class ProductsTest extends TestCase
 
     public function test_homepage_contains_empty_table(): void
     {
-        User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@user.com',
-            'password' => bcrypt('password')
-        ]);
-
-        $this->post('/login', [
-            'email' => 'admin@user.com',
-            'password' => 'password',
-        ]);
+        $this->createUser();
+        $this->loginUser();
 
         $response = $this->get('/products');
         $response->assertStatus(200);
@@ -32,16 +24,8 @@ class ProductsTest extends TestCase
 
     public function test_homepage_contains_non_empty_table(): void
     {
-        User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@user.com',
-            'password' => bcrypt('password')
-        ]);
-
-        $this->post('/login', [
-            'email' => 'admin@user.com',
-            'password' => 'password',
-        ]);
+        $this->createUser();
+        $this->loginUser();
 
         $product = Product::factory()->create([
             'name' => 'Product Test',
@@ -59,16 +43,8 @@ class ProductsTest extends TestCase
 
     public function test_paginated_products_table_doesnt_contain_11th_record()
     {
-        User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@user.com',
-            'password' => bcrypt('password')
-        ]);
-
-        $this->post('/login', [
-            'email' => 'admin@user.com',
-            'password' => 'password',
-        ]);
+        $this->createUser();
+        $this->loginUser();
 
         $products = Product::factory(11)->create();
         $lastProduct = $products->last();
@@ -79,6 +55,23 @@ class ProductsTest extends TestCase
         $response->assertViewHas('products', function ($collection) use ($lastProduct) {
             return !$collection->contains($lastProduct);
         });
+    }
+
+    private function createUser(): User
+    {
+        return User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@user.com',
+            'password' => bcrypt('password')
+        ]);
+    }
+
+    private function loginUser(): void
+    {
+        $this->post('/login', [
+            'email' => 'admin@user.com',
+            'password' => 'password',
+        ]);
     }
 
 }
