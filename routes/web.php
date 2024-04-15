@@ -8,18 +8,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/products', function () {
-    return view('products.index');
-})->middleware(['auth', 'verified'])->name('products.index');
-
-Route::resource('products', ProductController::class);
-
+Route::get('/products', [ProductController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('products.index');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -27,4 +22,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+//Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+
+require __DIR__ . '/auth.php';
