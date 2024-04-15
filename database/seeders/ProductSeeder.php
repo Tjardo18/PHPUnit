@@ -18,23 +18,15 @@ class ProductSeeder extends Seeder
         Product::Insert([
             [
                 'name' => 'Product 1',
-                'price' => 1000
+                'price' => 123
             ],
             [
                 'name' => 'Product 2',
-                'price' => 2000
+                'price' => 456
             ],
             [
                 'name' => 'Product 3',
-                'price' => 3000
-            ],
-            [
-                'name' => 'Product 4',
-                'price' => 4000
-            ],
-            [
-                'name' => 'Product 5',
-                'price' => 5000
+                'price' => 789
             ],
         ]);
     }
