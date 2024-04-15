@@ -10,8 +10,15 @@ use App\Models\User;
 
 class ProductsTest extends TestCase
 {
+    use RefreshDatabase;
     public function test_homepage_contains_empty_table(): void
     {
+        User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@user.com',
+            'password' => bcrypt('password')
+        ]);
+
         $this->post('/login', [
             'email' => 'admin@user.com',
             'password' => 'password',
@@ -24,14 +31,20 @@ class ProductsTest extends TestCase
 
     public function test_homepage_contains_non_empty_table(): void
     {
-        Product::create([
-            'name' => 'Product Test',
-            'price' => 123,
+        User::factory()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@user.com',
+            'password' => bcrypt('password')
         ]);
 
         $this->post('/login', [
             'email' => 'admin@user.com',
             'password' => 'password',
+        ]);
+
+        Product::factory()->create([
+            'name' => 'Product Test',
+            'price' => 123,
         ]);
 
         $response = $this->get('/products');
