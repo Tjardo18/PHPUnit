@@ -57,12 +57,54 @@ class ProductsTest extends TestCase
         });
     }
 
-    private function createUser(): User
+    public function test_admin_can_see_products_create_button()
+    {
+        $this->createUser(1);
+        $this->loginUser();
+
+        $response = $this->get('/products');
+        $response->assertStatus(200);
+        $response->assertSee('Add new product');
+    }
+
+    public function test_non_admin_cannot_see_products_create_button()
+    {
+        $this->createUser();
+        $this->loginUser();
+
+        $response = $this->get('/products');
+
+        $response->assertStatus(200);
+        $response->assertDontSee('Add new product');
+    }
+
+    public function test_admin_can_access_product_create_page()
+    {
+        $this->createUser(1);
+        $this->loginUser();
+
+        $response = $this->get('/products/create');
+
+        $response->assertStatus(200);
+    }
+
+    public function test_non_admin_cannot_access_product_create_page()
+    {
+        $this->createUser();
+        $this->loginUser();
+
+        $response = $this->get('/products/create');
+
+        $response->assertStatus(403);
+    }
+
+    private function createUser($is_admin = 0): User
     {
         return User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@user.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
+            'is_admin' => $is_admin
         ]);
     }
 

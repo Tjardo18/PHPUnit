@@ -45,6 +45,7 @@ class AuthTest extends TestCase
         return $this->post('/login', [
             'email' => 'admin@user.com',
             'password' => 'password',
+            'is_admin' => '1'
         ]);
     }
 }

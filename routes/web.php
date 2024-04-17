@@ -10,14 +10,20 @@ Route::get('/', function () {
 
 Route::redirect('/', 'login');
 
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/products', [ProductController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('products.index');
+Route::middleware('auth')->group(function () {
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+
+    Route::middleware('is_admin')->group(function () {
+        Route::get('/products/create', [ProductController::class, 'create'])
+            ->name('products.create');
+        Route::post('/products', [ProductController::class, 'store'])
+            ->name('products.store');
+    });
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
