@@ -135,6 +135,22 @@ class ProductsTest extends TestCase
         $response->assertViewHas('product', $product);
     }
 
+    public function test_product_update_validation_error_redirects_back_to_form()
+    {
+        $product = Product::factory()->create();
+
+        $this->createUser(1);
+        $this->loginUser();
+
+        $response = $this->put('products/' . $product->id, [
+            'name' => '',
+            'price' => ''
+        ]);
+
+        $response->assertStatus(302);
+        $response->assertInvalid(['name', 'price']);
+    }
+
     private function createUser($is_admin = 0): User
     {
         return User::factory()->create([
