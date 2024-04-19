@@ -151,6 +151,53 @@ class ProductsTest extends TestCase
         $response->assertInvalid(['name', 'price']);
     }
 
+    public function test_product_delete_successful()
+    {
+        $product = Product::factory()->create();
+
+        $this->createUser(1);
+        $this->loginUser();
+
+        $response = $this->delete('products/' . $product->id);
+
+        $response->assertStatus(302);
+        $response->assertRedirect('products');
+
+        $this->assertDatabaseMissing('products', $product->toArray());
+        $this->assertDatabaseCount('products', 0);
+    }
+
+    public function test_api_returns_products_list()
+    {
+        $product = Product::factory()->create();
+        $response = $this->getJson('/api/products');
+
+        $response->assertJson([$product->toArray()]);
+    }
+
+    public function test_api_product_store_successful()
+    {
+        $product = [
+            'name' => 'Product 1',
+            'price' => 123
+        ];
+        $response = $this->postJson('/api/products', $product);
+
+        $response->assertStatus(201);
+        $response->assertJson($product);
+    }
+
+    public function test_api_product_invalid_store_returns_error()
+    {
+        $product = [
+            'name' => '',
+            'price' => 123
+        ];
+        $response = $this->postJson('/api/products', $product);
+
+        $response->assertStatus(422);
+    }
+
     private function createUser($is_admin = 0): User
     {
         return User::factory()->create([
